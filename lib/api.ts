@@ -7,6 +7,7 @@ interface FetchOptions extends RequestInit {
 export async function apiFetch(endpoint: string, options: FetchOptions = {}) {
   const res = await fetch(`${BASE_URL}${endpoint}`, {
     headers: {
+      'ngrok-skip-browser-warning': 'true',
       ...(options.headers || {}),
     },
     ...options,

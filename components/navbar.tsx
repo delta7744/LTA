@@ -452,8 +452,9 @@ export default function Navbar() {
                   </NavigationMenuItem>
 
                   <NavigationMenuItem>
-                    <Link href="/transfer" legacyBehavior passHref>
-                      <NavigationMenuLink
+                    <NavigationMenuLink asChild>
+                      <Link
+                        href="/transfer"
                         className={cn(
                           navigationMenuTriggerStyle(),
                           "h-20 px-3",
@@ -463,13 +464,14 @@ export default function Navbar() {
                       >
                         <Truck className="h-4 w-4 mr-2 flex-shrink-0" />
                         <span>{t.navbar.transfer}</span>
-                      </NavigationMenuLink>
-                    </Link>
+                      </Link>
+                    </NavigationMenuLink>
                   </NavigationMenuItem>
 
                   <NavigationMenuItem>
-                    <Link href="/contact" legacyBehavior passHref>
-                      <NavigationMenuLink
+                    <NavigationMenuLink asChild>
+                      <Link
+                        href="/contact"
                         className={cn(
                           navigationMenuTriggerStyle(),
                           "h-20 px-3",
@@ -479,13 +481,14 @@ export default function Navbar() {
                       >
                         <Phone className="h-4 w-4 mr-2 flex-shrink-0" />
                         <span>{t.navbar.contact}</span>
-                      </NavigationMenuLink>
-                    </Link>
+                      </Link>
+                    </NavigationMenuLink>
                   </NavigationMenuItem>
 
                   <NavigationMenuItem>
-                    <Link href="/bookings" legacyBehavior passHref>
-                      <NavigationMenuLink
+                    <NavigationMenuLink asChild>
+                      <Link
+                        href="/bookings"
                         className={cn(
                           navigationMenuTriggerStyle(),
                           "h-20 px-3 relative",
@@ -495,8 +498,8 @@ export default function Navbar() {
                       >
                         <Tag className="h-4 w-4 mr-2 flex-shrink-0" />
                         <span>{t.navbar.bookings}</span>
-                      </NavigationMenuLink>
-                    </Link>
+                      </Link>
+                    </NavigationMenuLink>
                   </NavigationMenuItem>
                 </NavigationMenuList>
               </NavigationMenu>
