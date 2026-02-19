@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  nextjs-app:
+    build: .
+    ports:
+      - "3000:3000" # Expose port 3000 for Next.js frontend
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_BASE_URL=http://app:3333/api
+      - NEXT_PUBLIC_API_POSTMAN_API_URL=https://admin.mygo.co/Postman/postman.php
+      - NEXT_PUBLIC_API_POSTMAN_API_LOGIN=XMLSLIMA
+      - NEXT_PUBLIC_API_POSTMAN_API_PASSWORD=xyVPq@nG9X93FQ5YAPQ2
+    volumes:
+      - .:/nextjs-app # For live code updates (optional, useful in dev)
+      - /nextjs-app/node_modules/
+    command: npm run dev # or 'npm start' for production build
+
+# No volumes or databases needed if you only deploy frontend here

@@ -1,0 +1,38 @@
+﻿10: Hammamet
+11: Nabeul
+12: Kelibia
+13: Korba
+14: Korbous
+17: Kairouan
+18: Djerba
+19: Zarzis
+20: Douz
+22: Kebili
+23: Ksar Ghilane
+31: Ain Drahem
+32: Tunis
+33: Tabarka
+34: Sousse
+35: Mahdia
+37: Monastir
+39: Sfax
+47: Tozeur
+48: Bizerte
+49: Le Kef
+54: Gafsa
+55: Gabes
+59: Zaghouan
+70: Tataouine
+71: Téboursouk
+72: Sbeitla
+73: Matmata
+74: Sidi Bouzid
+75: Nefta
+76: Mednenine
+6482: El Jem
+6483: Kerkennah
+6484: Nefza
+6485: Gammarth
+6487: Béja
+6488: Istanbul
+6489: Esenyurt - Istanbul
