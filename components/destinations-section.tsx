@@ -90,7 +90,12 @@ export default function DestinationsSection() {
       setError((prev) => ({ ...prev, [category]: null }));
 
       try {
-        const response = await fetch("/api/tours/");
+        const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+        const response = await fetch(`${baseUrl}/tours/`, {
+          headers: {
+            "ngrok-skip-browser-warning": "true",
+          },
+        });
 
         if (!response.ok) {
           throw new Error(`Failed to fetch tours: ${response.status}`);

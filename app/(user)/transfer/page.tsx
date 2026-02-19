@@ -29,10 +29,12 @@ export default function TransferPackagePage() {
     const formData = new FormData(event.currentTarget);
     const data = Object.fromEntries(formData.entries());
     try {
-      const response = await fetch("/api/transfer", {
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+      const response = await fetch(`${baseUrl}/transfer`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true",
         },
         body: JSON.stringify(data),
       });

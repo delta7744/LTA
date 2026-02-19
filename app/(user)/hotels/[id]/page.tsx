@@ -205,10 +205,12 @@ export default function HotelDetailPage() {
       setError((prev) => ({ ...prev, details: null }));
 
       try {
-        const response = await fetch("/api/hotel/detail", {
+        const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+        const response = await fetch(`${baseUrl}/hotel/detail`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "true",
           },
           body: JSON.stringify({
             data: { Hotel: hotelId },
@@ -247,6 +249,7 @@ export default function HotelDetailPage() {
     setError((prev) => ({ ...prev, booking: null }));
 
     try {
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
       const apiData = {
         SearchDetails: {
           BookingDetails: {
@@ -258,10 +261,11 @@ export default function HotelDetailPage() {
         },
       };
 
-      const response = await fetch("/api/hotel/search", {
+      const response = await fetch(`${baseUrl}/hotel/search`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true",
         },
         body: JSON.stringify({
           data: apiData,
@@ -460,10 +464,12 @@ export default function HotelDetailPage() {
       };
 
       try {
-        const response = await fetch("/api/booking/hotels", {
+        const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+        const response = await fetch(`${baseUrl}/booking/hotels`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "true",
           },
           body: JSON.stringify(bookingData),
         });
