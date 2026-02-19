@@ -52,10 +52,12 @@ export default function HotelSection() {
       setError((prev) => ({ ...prev, [cityKey]: null }));
 
       try {
-        const response = await fetch("/api/hotel/list", {
+        const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+        const response = await fetch(`${baseUrl}/hotel/list`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "true",
           },
           body: JSON.stringify({
             data: { City: cityId },

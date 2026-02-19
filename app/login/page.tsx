@@ -24,10 +24,12 @@ export default function LoginPage() {
     setLoading(true)
     setError("")
     try {
-      const res = await fetch("/api/auth/login", {
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+      const res = await fetch(`${baseUrl}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true",
         },
         body: JSON.stringify({ email, password }),
       })

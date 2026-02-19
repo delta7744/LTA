@@ -117,7 +117,12 @@ export default function CitiesListPage() {
     const fetchCities = async () => {
       try {
         setLoading(true);
-        const response = await fetch("/api/city");
+        const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+        const response = await fetch(`${baseUrl}/city`, {
+          headers: {
+            "ngrok-skip-browser-warning": "true",
+          },
+        });
 
         if (!response.ok) {
           throw new Error("Failed to fetch cities");
@@ -237,8 +242,12 @@ export default function CitiesListPage() {
 
     try {
       setLoading(true);
-      const response = await fetch(`/api/city/${cityToDelete}`, {
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+      const response = await fetch(`${baseUrl}/city/${cityToDelete}`, {
         method: "DELETE",
+        headers: {
+          "ngrok-skip-browser-warning": "true",
+        },
       });
 
       if (!response.ok) {
@@ -306,9 +315,16 @@ export default function CitiesListPage() {
         };
       }
 
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
       const response = await fetch(
-        `/api/city/${cityToEdit._id}`,
-        requestOptions
+        `${baseUrl}/city/${cityToEdit._id}`,
+        {
+          ...requestOptions,
+          headers: {
+            ...requestOptions.headers,
+            "ngrok-skip-browser-warning": "true",
+          },
+        }
       );
 
       if (!response.ok) {
@@ -351,8 +367,12 @@ export default function CitiesListPage() {
   const handleSyncConfirm = async () => {
     try {
       setSyncing(true);
-      const response = await fetch("/api/partner/sync/city", {
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+      const response = await fetch(`${baseUrl}/partner/sync/city`, {
         method: "POST",
+        headers: {
+          "ngrok-skip-browser-warning": "true",
+        },
       });
 
       const data = await response.json();

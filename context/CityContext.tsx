@@ -25,10 +25,15 @@ export const CityProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const fetchCities = async () => {
       try {
-        const response = await fetch("/api/city");
+        const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+        const response = await fetch(`${baseUrl}/city`, {
+          headers: {
+            "ngrok-skip-browser-warning": "true",
+          },
+        });
         if (!response.ok) throw new Error("Failed to fetch cities");
         const data = await response.json();
-        console.log('provider : city' ,data)
+        console.log('provider : city', data)
         setCities(data.data || []);
       } catch (error) {
         console.error("Failed to fetch cities:", error);

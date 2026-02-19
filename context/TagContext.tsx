@@ -24,7 +24,12 @@ export const TagProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const fetchTags = async () => {
       try {
-        const response = await fetch("/api/tag");
+        const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+        const response = await fetch(`${baseUrl}/tag`, {
+          headers: {
+            "ngrok-skip-browser-warning": "true",
+          },
+        });
         if (!response.ok) throw new Error("Failed to fetch tags");
         const data = await response.json();
         console.log("provider : Tag", data);

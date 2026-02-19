@@ -24,7 +24,12 @@ export const CategoryProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const fetchCategorys = async () => {
       try {
-        const response = await fetch("/api/categorie");
+        const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+        const response = await fetch(`${baseUrl}/categorie`, {
+          headers: {
+            "ngrok-skip-browser-warning": "true",
+          },
+        });
         if (!response.ok) throw new Error("Failed to fetch categories");
         const data = await response.json();
         console.log("provider : categories", data);
