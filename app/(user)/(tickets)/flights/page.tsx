@@ -16,7 +16,8 @@ import {
 import { RefreshCw } from "lucide-react";
 import { useLanguage } from "@/components/language-provider";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import { z } from "zod";
 import ThankYouModal from "@/components/ThankYouModal";
 import ContactCard from "@/components/contactCard";
@@ -50,6 +51,10 @@ const crossingSchema = z.object({
 export default function FlightsPage() {
   const { toast } = useToast();
   const { t } = useLanguage();
+  const searchParams = useSearchParams();
+
+  const queryDate = searchParams.get("date") || "";
+  const queryDestination = searchParams.get("destination") || "";
 
   const [showModal, setShowModal] = useState(false);
   const [referralCode, setReferralCode] = useState<string>("");
@@ -532,6 +537,7 @@ export default function FlightsPage() {
                           <Input
                             name="departureDate"
                             type="date"
+                            defaultValue={queryDate}
                             required
                             className={
                               formErrors.departureDate ? "border-red-500" : ""
@@ -578,6 +584,7 @@ export default function FlightsPage() {
                           </label>
                           <Input
                             name="arrivalPort"
+                            defaultValue={queryDestination}
                             placeholder={
                               t.ticketsBookingPage.crossingAndCabinInfo
                                 .arrivalAirPort.placeholder

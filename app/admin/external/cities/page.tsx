@@ -118,11 +118,7 @@ export default function CitiesListPage() {
       try {
         setLoading(true);
         const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
-        const response = await fetch(`${baseUrl}/city`, {
-          headers: {
-            "ngrok-skip-browser-warning": "true",
-          },
-        });
+        const response = await fetch(`${baseUrl}/city`);
 
         if (!response.ok) {
           throw new Error("Failed to fetch cities");
@@ -245,9 +241,6 @@ export default function CitiesListPage() {
       const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
       const response = await fetch(`${baseUrl}/city/${cityToDelete}`, {
         method: "DELETE",
-        headers: {
-          "ngrok-skip-browser-warning": "true",
-        },
       });
 
       if (!response.ok) {
@@ -320,10 +313,6 @@ export default function CitiesListPage() {
         `${baseUrl}/city/${cityToEdit._id}`,
         {
           ...requestOptions,
-          headers: {
-            ...requestOptions.headers,
-            "ngrok-skip-browser-warning": "true",
-          },
         }
       );
 
@@ -370,9 +359,6 @@ export default function CitiesListPage() {
       const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
       const response = await fetch(`${baseUrl}/partner/sync/city`, {
         method: "POST",
-        headers: {
-          "ngrok-skip-browser-warning": "true",
-        },
       });
 
       const data = await response.json();
@@ -578,8 +564,8 @@ export default function CitiesListPage() {
                       </TableCell>
                     </TableRow>
                   ) : (
-                    sortedCities.map((city) => (
-                      <TableRow key={city._id}>
+                    sortedCities.map((city, index) => (
+                      <TableRow key={city.CityId || city._id || index}>
                         <TableCell>
                           {city.images ? (
                             <div className="relative h-10 w-10 rounded-md overflow-hidden">

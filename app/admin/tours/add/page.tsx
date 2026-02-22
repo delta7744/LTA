@@ -435,9 +435,7 @@ export default function AddTourPage() {
         throw new Error("Please add at least one trip highlight");
       }
 
-      if (images.length === 0) {
-        throw new Error("Please upload at least one image");
-      }
+      // Images are optional — tour will be created without images if Cloudinary is unavailable
 
       const formData = new FormData();
 
@@ -506,8 +504,12 @@ export default function AddTourPage() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to create tour");
+        let errorMsg = "Failed to create tour";
+        try {
+          const errorData = await response.json();
+          errorMsg = errorData.message || errorData.error || errorMsg;
+        } catch { }
+        throw new Error(errorMsg);
       }
 
       toast({

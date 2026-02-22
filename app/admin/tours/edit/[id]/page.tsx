@@ -160,6 +160,8 @@ export default function EditTripPage() {
           returnDate: data.returnDate
             ? new Date(data.returnDate).toISOString().split("T")[0]
             : "",
+          // Handle price structure change (array to number for form state)
+          price: Array.isArray(data.price) ? (data.price[0]?.basePrice || 0) : (data.price || 0),
           // Ensure arrays exist
           includedServices: data.includedServices || [],
           excludedServices: data.excludedServices || [],

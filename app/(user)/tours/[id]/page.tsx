@@ -57,7 +57,8 @@ export default function TourDetails() {
 
       try {
         setLoading(true);
-        const response = await fetch(`/api/tours/${id}`);
+        const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+        const response = await fetch(`${baseUrl}/tours/${id}`);
         if (!response.ok) {
           throw new Error("Failed to fetch trip package");
         }
@@ -76,9 +77,17 @@ export default function TourDetails() {
     fetchTrip();
   }, [id]);
 
+  const getEffectivePrice = (pkg: Trip) => {
+    if (pkg.price && Array.isArray(pkg.price) && pkg.price.length > 0) {
+      return (pkg.price[0].basePrice || 0) - (pkg.price[0].discounts || 0);
+    }
+    if (typeof pkg.price === "number") return pkg.price;
+    return 0;
+  };
+
   const calculateTotalPrice = () => {
     if (!tripPackage) return 0;
-    const basePrice = tripPackage.price || 0;
+    const basePrice = getEffectivePrice(tripPackage);
     const tax = tripPackage.tax || 0;
     return (basePrice + tax);
   };
@@ -407,10 +416,10 @@ export default function TourDetails() {
                   <div className="flex justify-between items-center mb-4">
                     <div>
                       <span className="text-2xl font-bold text-lta-purple">
-                        {tripPackage.price} TND
+                        {getEffectivePrice(tripPackage)} TND
                       </span>
                       <br />
-                      {tripPackage.tax > 0 && (
+                      {tripPackage.tax !== undefined && tripPackage.tax > 0 && (
                         <span className="text-sm text-muted-foreground ml-2">
                           {t.serviceDetails.tax} :{tripPackage.tax} TND tax
                         </span>

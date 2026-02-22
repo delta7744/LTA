@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import HotelSearchSidebar from "@/components/hotel-search-sidebar";
 import HotelResults from "@/components/hotel-results";
@@ -24,16 +24,16 @@ export default function HotelsPage() {
     .toISOString()
     .split("T")[0];
 
-  // Extract search parameters
-  const cityId = Number.parseInt(searchParams.get("cityId") || "10", 10);
-  const checkIn = searchParams.get("checkIn") || defaultCheckIn;
-  const checkOut = searchParams.get("checkOut") || defaultCheckOut;
+  // Initialize searchDetails directly from URL params if available
+  const cityIdParam = searchParams.get("cityId");
+  const checkInParam = searchParams.get("checkIn");
+  const checkOutParam = searchParams.get("checkOut");
 
   const [searchDetails, setSearchDetails] = useState<SearchDetails>({
     BookingDetails: {
-      CheckIn: checkIn,
-      CheckOut: checkOut,
-      City: cityId,
+      CheckIn: checkInParam || defaultCheckIn,
+      CheckOut: checkOutParam || defaultCheckOut,
+      City: cityIdParam ? Number.parseInt(cityIdParam) : 10,
     },
     Filters: {
       Keywords: "",
@@ -46,6 +46,40 @@ export default function HotelsPage() {
 
   // State to control sidebar visibility on mobile
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Sync searchDetails with searchParams
+  useState(() => {
+    // Initial sync before first render if possible, but useEffect is better for updates
+  });
+
+  useEffect(() => {
+    const cityIdParam = searchParams.get("cityId");
+    const checkInParam = searchParams.get("checkIn");
+    const checkOutParam = searchParams.get("checkOut");
+
+    if (!cityIdParam && !checkInParam && !checkOutParam) return;
+
+    setSearchDetails((prev) => {
+      // Avoid unnecessary updates if values are same
+      if (
+        prev.BookingDetails.CheckIn === (checkInParam || prev.BookingDetails.CheckIn) &&
+        prev.BookingDetails.CheckOut === (checkOutParam || prev.BookingDetails.CheckOut) &&
+        prev.BookingDetails.City === (cityIdParam ? Number.parseInt(cityIdParam) : prev.BookingDetails.City)
+      ) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        BookingDetails: {
+          ...prev.BookingDetails,
+          CheckIn: checkInParam || prev.BookingDetails.CheckIn,
+          CheckOut: checkOutParam || prev.BookingDetails.CheckOut,
+          City: cityIdParam ? Number.parseInt(cityIdParam) : prev.BookingDetails.City,
+        },
+      };
+    });
+  }, [searchParams]);
 
   return (
     <CategoryProvider>

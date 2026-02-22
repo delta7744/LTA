@@ -27,16 +27,20 @@ export const CityProvider = ({ children }: { children: ReactNode }) => {
       try {
         const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
         const response = await fetch(`${baseUrl}/city`, {
-          headers: {
-            "ngrok-skip-browser-warning": "true",
-          },
-        });
-        if (!response.ok) throw new Error("Failed to fetch cities");
-        const data = await response.json();
-        console.log('provider : city', data)
-        setCities(data.data || []);
-      } catch (error) {
-        console.error("Failed to fetch cities:", error);
+          headers: { "Content-Type": "application/json" },
+        }).catch(() => null); // silence network errors entirely
+
+        if (response && response.ok) {
+          const data = await response.json().catch(() => null);
+          if (data) {
+            console.log("provider : city", data);
+            setCities(data.data || []);
+          }
+        } else {
+          console.warn("City API unavailable, using empty list");
+        }
+      } catch {
+        // silently fail — cities are not critical
       } finally {
         setLoading(false);
       }

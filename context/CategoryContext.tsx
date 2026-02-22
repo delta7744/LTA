@@ -27,7 +27,7 @@ export const CategoryProvider = ({ children }: { children: ReactNode }) => {
         const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
         const response = await fetch(`${baseUrl}/categorie`, {
           headers: {
-            "ngrok-skip-browser-warning": "true",
+            "Content-Type": "application/json",
           },
         });
         if (!response.ok) throw new Error("Failed to fetch categories");

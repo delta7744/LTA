@@ -373,6 +373,18 @@ export default function TripListPage() {
     }
   };
 
+  // Safely extract a numeric base price from either old (number) or new (TripPrice[]) schema
+  const getPrice = (price: any): number => {
+    if (typeof price === 'number') return price;
+    if (Array.isArray(price) && price.length > 0) {
+      const p = price[0];
+      const base = Number(p?.basePrice ?? p?.price ?? 0);
+      const discount = Number(p?.discounts ?? 0);
+      return Math.max(0, base - discount);
+    }
+    return 0;
+  };
+
   // Get trip statistics
   const getTripStats = () => {
     const total = trips.length;
@@ -381,24 +393,30 @@ export default function TripListPage() {
     const soldOut = trips.filter((t) => t.status === "sold_out").length;
 
     const totalRevenue = trips.reduce(
-      (sum, trip) => sum + (trip.price + (trip.tax || 0)),
+      (sum, trip) => sum + (getPrice(trip.price) + Number(trip.tax || 0)),
       0
     );
     const activeRevenue = trips
       .filter((t) => t.status === "active")
-      .reduce((sum, trip) => sum + (trip.price + (trip.tax || 0)), 0);
+      .reduce((sum, trip) => sum + (getPrice(trip.price) + Number(trip.tax || 0)), 0);
 
     return {
       total,
       active,
       upcoming,
       soldOut,
-      totalRevenue,
-      activeRevenue,
+      totalRevenue: Number(totalRevenue) || 0,
+      activeRevenue: Number(activeRevenue) || 0,
     };
   };
 
   const stats = getTripStats();
+
+  // Helper to safely format currency numbers
+  const formatCurrency = (value: any) => {
+    const num = Number(value);
+    return isNaN(num) ? "0.00" : num.toFixed(2);
+  };
 
   return (
     <div className="space-y-6">
@@ -449,10 +467,10 @@ export default function TripListPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              TND {stats.totalRevenue.toFixed(2)}
+              TND {formatCurrency(stats.totalRevenue)}
             </div>
             <p className="text-xs text-muted-foreground">
-              {stats.activeRevenue.toFixed(2)} from active trips
+              {formatCurrency(stats.activeRevenue)} from active trips
             </p>
           </CardContent>
         </Card>
@@ -718,11 +736,11 @@ export default function TripListPage() {
                           <div className="space-y-1">
                             <div className="flex items-center text-sm font-medium">
                               <DollarSign className="h-3 w-3 mr-1" />
-                              {(trip.price + (trip.tax || 0)).toFixed(2)} TND
+                              {formatCurrency(getPrice(trip.price) + Number(trip.tax || 0))} TND
                             </div>
                             <div className="text-xs text-muted-foreground">
-                              Base: {trip.price.toFixed(2)}, Tax:{" "}
-                              {(trip.tax || 0).toFixed(2)}
+                              Base: {formatCurrency(getPrice(trip.price))}, Tax:{" "}
+                              {formatCurrency(Number(trip.tax || 0))}
                             </div>
                           </div>
                         </TableCell>

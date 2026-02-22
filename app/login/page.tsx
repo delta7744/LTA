@@ -10,6 +10,7 @@ import { Eye, EyeOff, Mail, Lock, ArrowRight, AlertCircle } from 'lucide-react'
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import Image from "next/image"
 import { motion } from "framer-motion"
+import { createSession } from "@/lib/session"
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false)
@@ -29,18 +30,28 @@ export default function LoginPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true",
         },
         body: JSON.stringify({ email, password }),
       })
 
       const data = await res.json()
       console.log("Response data:", data)
+
+      if (!res.ok) throw new Error(data.message || data.error || "Login failed")
+
       if (res.status === 200) {
-        localStorage.setItem("user", JSON.stringify(data.user))
+        const userData = data.data?.user || data.user;
+        const accessToken = data.data?.accessToken || data.accessToken;
+        const refreshToken = data.data?.refreshToken || data.refreshToken;
+
+        if (userData && accessToken && refreshToken) {
+          await createSession(refreshToken, accessToken, userData);
+          localStorage.setItem("user", JSON.stringify(userData))
+        } else {
+          console.error("Missing session data in response:", data);
+        }
       }
 
-      if (!res.ok) throw new Error(data.error || "Login failed")
       router.push("/admin")
     } catch (err: any) {
       setError(err.message)
@@ -61,10 +72,10 @@ export default function LoginPage() {
             className="max-w-md mx-auto text-center space-y-8"
           >
             <Image
-              src="/assests/travele-logo1.png"
+              src="/logo.png"
               alt="LTA Logo"
-              width={300}
-              height={300}
+              width={200}
+              height={80}
               className="mx-auto filter brightness-0 invert"
             />
             <div className="space-y-4">
@@ -96,10 +107,10 @@ export default function LoginPage() {
         <div className="w-full max-w-md">
           <div className="lg:hidden flex justify-center mb-8">
             <Image
-              src="/assests/travele-logo1.png"
+              src="/logo.png"
               alt="LTA Logo"
               width={180}
-              height={180}
+              height={60}
               className="mx-auto"
             />
           </div>
@@ -214,7 +225,7 @@ export default function LoginPage() {
           </motion.div>
 
           <div className="mt-8 text-center text-sm text-gray-500">
-            <p>© {new Date().getFullYear()} Lumia. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} LTA. All rights reserved.</p>
           </div>
         </div>
       </div>

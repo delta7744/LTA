@@ -46,7 +46,6 @@ export default function HotelResults({ searchDetails }: HotelResultsProps) {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "ngrok-skip-browser-warning": "true",
           },
           body: JSON.stringify({
             data: apiData,
@@ -191,18 +190,35 @@ export default function HotelResults({ searchDetails }: HotelResultsProps) {
           filteredHotels.map((hotel) => (
             <Card key={hotel.Hotel.Id} className="overflow-hidden">
               <div className="flex flex-col md:flex-row">
-                <div className="w-full md:w-1/3 relative h-56 md:h-auto">
-                  <Image
-                    src={
-                      hotel.Hotel.Image ||
-                      "/placeholder.svg?height=400&width=600" ||
-                      "/placeholder.svg" ||
-                      "/placeholder.svg"
-                    }
-                    alt={hotel.Hotel.Name}
-                    fill
-                    className="object-cover"
-                  />
+                <div className="w-full md:w-1/3 relative h-56 md:h-auto overflow-hidden group">
+                  <Link
+                    href={{
+                      pathname: `/hotels/${hotel.Hotel.Id}`,
+                      query: {
+                        search: JSON.stringify({
+                          ...searchDetails,
+                          BookingDetails: {
+                            ...searchDetails.BookingDetails,
+                            Hotel: [hotel.Hotel.Id],
+                            City: undefined,
+                          },
+                        }),
+                      },
+                    }}
+                    className="block w-full h-full"
+                  >
+                    <Image
+                      src={
+                        hotel.Hotel.Image ||
+                        "/placeholder.svg?height=400&width=600" ||
+                        "/placeholder.svg" ||
+                        "/placeholder.svg"
+                      }
+                      alt={hotel.Hotel.Name || "Hotel"}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </Link>
                   {hotel.Recommended === 1 && (
                     <Badge className="absolute top-2 left-2 bg-green-500 text-white border-none">
                       Recommended
@@ -213,9 +229,25 @@ export default function HotelResults({ searchDetails }: HotelResultsProps) {
                 <CardContent className="w-full md:w-2/3 p-4 md:p-6">
                   <div className="flex flex-col md:flex-row md:justify-between md:items-start">
                     <div className="mb-4 md:mb-0">
-                      <h3 className="text-xl font-semibold mb-1">
-                        {hotel.Hotel.Name}
-                      </h3>
+                      <Link
+                        href={{
+                          pathname: `/hotels/${hotel.Hotel.Id}`,
+                          query: {
+                            search: JSON.stringify({
+                              ...searchDetails,
+                              BookingDetails: {
+                                ...searchDetails.BookingDetails,
+                                Hotel: [hotel.Hotel.Id],
+                                City: undefined,
+                              },
+                            }),
+                          },
+                        }}
+                      >
+                        <h3 className="text-xl font-semibold mb-1 hover:text-lta-purple transition-colors cursor-pointer">
+                          {hotel.Hotel.Name}
+                        </h3>
+                      </Link>
                       <div className="flex items-center text-sm text-muted-foreground mb-2">
                         <MapPin className="h-4 w-4 mr-1" />
                         <span>{hotel.Hotel.Adress}</span>

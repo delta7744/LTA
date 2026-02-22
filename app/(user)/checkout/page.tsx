@@ -286,10 +286,9 @@ export default function CheckoutPage() {
 
       // Send booking data to API
       if (service.id.startsWith("fb-")) {
-        // Mock success for fallback data
-        console.log("Mocking booking submission for fallback service:", service.id);
-        await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate network
-        setReferralCode(`LTA-REF-${Math.floor(Math.random() * 100000)}`);
+        // Mock success for fallback data (still use BK-S- prefix so tracking works)
+        const suffix = Math.random().toString(36).substring(2, 7).toUpperCase();
+        setReferralCode(`BK-S-${suffix}`);
         setShowModal(true);
         return;
       }
@@ -307,7 +306,7 @@ export default function CheckoutPage() {
       }
 
       const result = await response.json();
-      setReferralCode(result.data.bookingReference || "");
+      setReferralCode(result.data?.bookingReference || result.bookingReference || "");
       // Show success message
       setShowModal(true);
     } catch (error) {
@@ -368,8 +367,10 @@ export default function CheckoutPage() {
           }
 
           if (!serviceData) {
+            // Try direct backend fetch (same approach as tour detail page)
             try {
-              const response = await fetch(`/api/tours/${serviceId}`);
+              const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+              const response = await fetch(`${baseUrl}/tours/${serviceId}`);
               if (response.ok) {
                 const apiData = await response.json();
                 const data = apiData.data;
@@ -390,7 +391,26 @@ export default function CheckoutPage() {
                   if (data.returnDate) setFormValues(v => ({ ...v, endDate: new Date(data.returnDate) }));
                 }
               }
-            } catch (e) { console.error("API fetch failed, checking fallbacks"); }
+            } catch (e) { console.error("Direct API fetch failed:", e); }
+          }
+
+          // Last resort: check FALLBACK_TOURS by any ID match
+          if (!serviceData) {
+            const fallback = FALLBACK_TOURS.find(t => t._id === serviceId);
+            if (fallback) {
+              serviceData = {
+                id: serviceId,
+                name: fallback.title,
+                type: "trip",
+                price: fallback.price || 0,
+                childPrice: (fallback.price || 0) * 0.7,
+                currency: "TND",
+                description: fallback.description || "",
+                duration: fallback.duration || 0,
+                image: fallback.images?.[0] || "",
+                tax: fallback.tax || 0,
+              };
+            }
           }
         }
 

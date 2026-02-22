@@ -13,7 +13,8 @@ import {
 } from "@/components/ui/select";
 import { useLanguage } from "@/components/language-provider";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import ThankYouModal from "@/components/ThankYouModal";
 import { tunisiaRegions } from "@/lib/constant";
 import ContactCard from "@/components/contactCard";
@@ -22,8 +23,13 @@ export default function TransferPackagePage() {
   const { toast } = useToast();
   const [showModal, setShowModal] = useState(false);
   const [referralCode, setReferralCode] = useState<string>("");
+  const searchParams = useSearchParams();
 
   const { t } = useLanguage();
+
+  const queryFrom = searchParams.get("from") || "";
+  const queryTo = searchParams.get("to") || "";
+  const queryDate = searchParams.get("date") || "";
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
@@ -34,7 +40,6 @@ export default function TransferPackagePage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true",
         },
         body: JSON.stringify(data),
       });
@@ -200,6 +205,7 @@ export default function TransferPackagePage() {
                           <Input
                             id="destination"
                             name="destination"
+                            defaultValue={queryTo}
                             placeholder={t.transferPage.enterDestination}
                           />
                         </div>
@@ -236,6 +242,7 @@ export default function TransferPackagePage() {
                           <Input
                             id="pickupAddress"
                             name="pickupAddress"
+                            defaultValue={queryFrom}
                             placeholder={t.transferPage.enterPickupAddress}
                           />
                         </div>
@@ -263,6 +270,7 @@ export default function TransferPackagePage() {
                             id="preferredDate"
                             name="preferredDate"
                             type="date"
+                            defaultValue={queryDate}
                           />
                         </div>
                         <div className="space-y-2">

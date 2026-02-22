@@ -17,6 +17,7 @@ import { RefreshCw } from "lucide-react";
 import { useLanguage } from "@/components/language-provider";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { z } from "zod";
 import ThankYouModal from "@/components/ThankYouModal";
 import ContactCard from "@/components/contactCard";
@@ -50,6 +51,10 @@ const crossingSchema = z.object({
 export default function FerryPage() {
   const { toast } = useToast();
   const { t } = useLanguage();
+  const searchParams = useSearchParams();
+
+  const queryDate = searchParams.get("date") || "";
+  const queryDestination = searchParams.get("destination") || "";
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [showModal, setShowModal] = useState(false);
@@ -531,6 +536,7 @@ export default function FerryPage() {
                           <Input
                             name="departureDate"
                             type="date"
+                            defaultValue={queryDate}
                             required
                             className={
                               formErrors.departureDate ? "border-red-500" : ""
@@ -577,6 +583,7 @@ export default function FerryPage() {
                           </label>
                           <Input
                             name="arrivalPort"
+                            defaultValue={queryDestination}
                             placeholder={
                               t.ticketsBookingPage.crossingAndCabinInfo
                                 .arrivalPort.placeholder

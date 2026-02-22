@@ -1,37 +1,44 @@
 "use client";
 
 import { Plane, Hotel, Map, CreditCard, Users, Briefcase } from "lucide-react";
+import Link from "next/link";
 
 const services = [
     {
         icon: <Plane className="w-8 h-8" />,
         title: "Flight Booking",
-        desc: "Global connectivity with premium airline partners at competitive rates."
+        desc: "Global connectivity with premium airline partners at competitive rates.",
+        link: "/flights"
     },
     {
         icon: <Hotel className="w-8 h-8" />,
         title: "Hotel Reservations",
-        desc: "Handpicked luxury stays and comfortable accommodations worldwide."
+        desc: "Handpicked luxury stays and comfortable accommodations worldwide.",
+        link: "/hotels"
     },
     {
         icon: <Map className="w-8 h-8" />,
         title: "Travel Packages",
-        desc: "Curated cultural and adventure journeys."
+        desc: "Curated cultural and adventure journeys.",
+        link: "/tours"
     },
     {
         icon: <CreditCard className="w-8 h-8" />,
         title: "Visa Assistance",
-        desc: "Expert guidance for smooth and hassle-free visa applications."
+        desc: "Expert guidance for smooth and hassle-free visa applications.",
+        link: "/contact"
     },
     {
         icon: <Briefcase className="w-8 h-8" />,
         title: "Corporate Travel",
-        desc: "Seamless business travel management for professionals."
+        desc: "Seamless business travel management for professionals.",
+        link: "/contact"
     },
     {
         icon: <Users className="w-8 h-8" />,
         title: "Group Tours",
-        desc: "Safe and engaging expeditions for families and organizations."
+        desc: "Safe and engaging expeditions for families and organizations.",
+        link: "/tours"
     }
 ];
 
@@ -49,9 +56,10 @@ export default function ServicesSection() {
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {services.map((service, idx) => (
-                        <div
+                        <Link
                             key={idx}
-                            className="bg-white p-10 rounded-3xl shadow-sm border border-transparent hover:border-lta-purple/10 hover:shadow-xl transition-all duration-300 group relative overflow-hidden"
+                            href={service.link}
+                            className="bg-white p-10 rounded-3xl shadow-sm border border-transparent hover:border-lta-purple/10 hover:shadow-xl transition-all duration-300 group relative overflow-hidden block"
                         >
                             <div className="absolute top-0 right-0 w-24 h-24 bg-lta-purple/5 rounded-bl-[100px] transition-all duration-300 group-hover:scale-150 group-hover:bg-lta-purple/10"></div>
 
@@ -64,11 +72,11 @@ export default function ServicesSection() {
                                 {service.desc}
                             </p>
 
-                            <div className="flex items-center text-lta-purple font-bold text-sm uppercase tracking-wider group/link cursor-pointer">
+                            <div className="flex items-center text-lta-purple font-bold text-sm uppercase tracking-wider group/link">
                                 Learn More
                                 <span className="ml-2 transform transition-transform group-hover/link:translate-x-1">→</span>
                             </div>
-                        </div>
+                        </Link>
                     ))}
                 </div>
             </div>

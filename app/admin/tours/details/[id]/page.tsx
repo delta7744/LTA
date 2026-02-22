@@ -73,7 +73,7 @@ interface Trip {
   includedServices: string[];
   excludedServices: string[];
   images: string[];
-  price: number;
+  price: { basePrice: number; discounts: number }[];
   tax: number;
   maxParticipants: number;
   travelerType: "adult" | "child" | "senior" | "any";
@@ -147,6 +147,11 @@ export default function TripDetailsPage() {
       hour: "2-digit",
       minute: "2-digit",
     });
+  };
+
+  const formatCurrency = (value: any) => {
+    const num = Number(value);
+    return isNaN(num) ? "0.00" : num.toFixed(2);
   };
 
   // Get status badge color
@@ -395,7 +400,7 @@ export default function TripDetailsPage() {
                                 </div>
                                 {activity.cost && (
                                   <div className="text-sm font-medium">
-                                    {activity.cost.toFixed(2)} TND
+                                    {formatCurrency(activity.cost)} TND
                                   </div>
                                 )}
                               </div>
@@ -527,20 +532,23 @@ export default function TripDetailsPage() {
               <div>
                 <p className="text-sm font-medium">Base Price</p>
                 <p className="text-2xl font-bold">
-                  {trip.price.toFixed(2)} TND
+                  {formatCurrency(trip.price?.[0]?.basePrice)} TND
                 </p>
               </div>
               <div>
                 <p className="text-sm font-medium">Tax</p>
                 <p className="text-lg font-semibold">
-                  {(trip.tax || 0).toFixed(2)} TND
+                  {formatCurrency(trip.tax)} TND
                 </p>
               </div>
               <Separator />
               <div>
                 <p className="text-sm font-medium">Total Price</p>
                 <p className="text-2xl font-bold text-green-600">
-                  {(trip.price + (trip.tax || 0)).toFixed(2)} TND
+                  {formatCurrency(
+                    Number(trip.price?.[0]?.basePrice || 0) + Number(trip.tax || 0)
+                  )}{" "}
+                  TND
                 </p>
               </div>
               <div>

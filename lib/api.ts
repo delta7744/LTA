@@ -5,18 +5,36 @@ interface FetchOptions extends RequestInit {
 }
 
 export async function apiFetch(endpoint: string, options: FetchOptions = {}) {
+  const headers: Record<string, string> = { ...(options.headers || {}) };
+
+  // Don't set Content-Type for FormData, browser will set it with boundary
+  if (!(options.body instanceof FormData)) {
+    if (!headers["Content-Type"]) {
+      headers["Content-Type"] = "application/json";
+    }
+  }
+
   const res = await fetch(`${BASE_URL}${endpoint}`, {
-    headers: {
-      'ngrok-skip-browser-warning': 'true',
-      ...(options.headers || {}),
-    },
     ...options,
+    headers,
   });
 
   if (!res.ok) {
-    const error = await res.json();
-    console.error('API error response:', error);
-    throw new Error(error.message || 'API Error');
+    let errorMessage = "API Error";
+    try {
+      const errorData = await res.json();
+      console.error("API JSON error:", errorData);
+      errorMessage = errorData.message || errorMessage;
+    } catch (e) {
+      try {
+        const text = await res.text();
+        console.error("API Text error:", text);
+        errorMessage = text.substring(0, 100) || errorMessage;
+      } catch (e2) {
+        console.error("API parse error:", e2);
+      }
+    }
+    throw new Error(errorMessage);
   }
 
   return res.json();

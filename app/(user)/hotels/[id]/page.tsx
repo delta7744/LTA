@@ -210,7 +210,6 @@ export default function HotelDetailPage() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "ngrok-skip-browser-warning": "true",
           },
           body: JSON.stringify({
             data: { Hotel: hotelId },
@@ -265,7 +264,6 @@ export default function HotelDetailPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true",
         },
         body: JSON.stringify({
           data: apiData,
@@ -469,7 +467,6 @@ export default function HotelDetailPage() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "ngrok-skip-browser-warning": "true",
           },
           body: JSON.stringify(bookingData),
         });
@@ -591,7 +588,7 @@ export default function HotelDetailPage() {
                   <div className="relative h-[400px] w-full rounded-lg overflow-hidden">
                     <Image
                       src={hotelDetail.Image || "/placeholder.svg"}
-                      alt={hotelDetail.Name}
+                      alt={hotelDetail.Name || "Hotel"}
                       fill
                       className="object-cover"
                     />
@@ -604,7 +601,7 @@ export default function HotelDetailPage() {
                         src={image.Url || "/placeholder.svg"}
                         alt={
                           image.Alt ||
-                          `${hotelDetail.Name} - Image ${index + 1}`
+                          `${hotelDetail.Name || "Hotel"} - Image ${index + 1}`
                         }
                         fill
                         className="object-cover"
@@ -676,18 +673,22 @@ export default function HotelDetailPage() {
                         {t.detailsPage.contactInformation}
                       </h3>
                       <div className="space-y-2">
-                        <div className="flex items-center">
-                          <Phone className="h-4 w-4 mr-2" />
-                          <span>{hotelDetail.Phone}</span>
-                        </div>
-                        <div className="flex items-center">
-                          <Mail className="h-4 w-4 mr-2" />
-                          <span>{hotelDetail.Email}</span>
-                        </div>
+                        {hotelDetail.Phone && (
+                          <div className="flex items-center">
+                            <Phone className="h-4 w-4 mr-2" />
+                            <span>{hotelDetail.Phone}</span>
+                          </div>
+                        )}
+                        {hotelDetail.Email && (
+                          <div className="flex items-center">
+                            <Mail className="h-4 w-4 mr-2" />
+                            <span>{hotelDetail.Email}</span>
+                          </div>
+                        )}
                         <div className="flex items-center">
                           <Clock className="h-4 w-4 mr-2" />
                           <span>
-                            {t.detailsPage.checkInTime} {hotelDetail.CheckIn}
+                            {t.detailsPage.checkInTime} {hotelDetail.CheckIn || "14:00"}
                           </span>
                         </div>
                       </div>

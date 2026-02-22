@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   CalendarIcon,
   MapPin,
@@ -68,7 +68,19 @@ export default function HotelSearchSidebar({
   );
   const { cities, loading: citiesLoading } = useCities();
   // const { tags, loading: tagsLoading } = useTags();
+  // const { tags, loading: tagsLoading } = useTags();
   // const { categories, loading: categoriesLoading } = useCategorys();
+
+  // Sync local state when initialSearch prop changes (e.g., on URL update)
+  useEffect(() => {
+    setSearchDetails(initialSearch);
+    if (initialSearch.BookingDetails.CheckIn) {
+      setCheckInDate(new Date(initialSearch.BookingDetails.CheckIn));
+    }
+    if (initialSearch.BookingDetails.CheckOut) {
+      setCheckOutDate(new Date(initialSearch.BookingDetails.CheckOut));
+    }
+  }, [initialSearch]);
 
   const handleCheckInSelect = (date: Date | undefined) => {
     setCheckInDate(date);

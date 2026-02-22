@@ -58,9 +58,6 @@ export default function HeroSlider() {
         const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
         const res = await fetch(`${baseUrl}/banner`, {
           signal: controller.signal,
-          headers: {
-            "ngrok-skip-browser-warning": "true",
-          },
         });
         if (!res.ok) throw new Error("Failed to fetch slides");
         const data = await res.json();

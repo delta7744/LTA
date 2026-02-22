@@ -33,17 +33,64 @@ export default function SearchBar() {
     "hotel" | "tours" | "tickets" | "transfer"
   >("hotel");
 
-  const handleSearchNavigation = (params: Record<string, string>) => {
-    let basePath = "/";
+  const handleSearchNavigation = (params: any) => {
+    let path = "";
+    const query: any = { ...params };
+
+    // Format any date objects or ISO strings to YYYY-MM-DD for consistency
+    Object.keys(query).forEach((key) => {
+      if (query[key] && (key.toLowerCase().includes("date") || key === "checkIn" || key === "checkOut")) {
+        try {
+          const date = new Date(query[key]);
+          if (!isNaN(date.getTime())) {
+            query[key] = date.toISOString().split("T")[0];
+          }
+        } catch (e) {
+          // Keep as is if not a valid date
+        }
+      }
+    });
+
     switch (searchType) {
-      case "hotel": basePath = "/hotels"; break;
-      case "tours": basePath = "/tours/cultural"; break; // Default to cultural
-      case "tickets": basePath = "/flights"; break;
-      case "transfer": basePath = "/transfer"; break;
+      case "hotel":
+        path = "/hotels";
+        break;
+
+      case "tours":
+        const tourSubPath = params.subType || "cultural";
+        path = `/tours/${tourSubPath}`;
+        delete query.subType;
+        break;
+
+      case "tickets":
+        if (params.type === "ferry") {
+          path = "/ferry";
+        } else {
+          path = "/flights";
+        }
+        break;
+
+      case "transfer":
+        path = "/transfer";
+        if (params.pickup) {
+          query.from = params.pickup;
+          delete query.pickup;
+        }
+        break;
+
+      default:
+        path = "/";
     }
 
-    const query = new URLSearchParams(params).toString();
-    router.push(`${basePath}?${query}`);
+    // Clean up empty params
+    Object.keys(query).forEach(key => {
+      if (query[key] === undefined || query[key] === null || query[key] === "") {
+        delete query[key];
+      }
+    });
+
+    const queryString = new URLSearchParams(query).toString();
+    router.push(queryString ? `${path}?${queryString}` : path);
   };
 
   return (

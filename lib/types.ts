@@ -51,6 +51,11 @@ interface TripItinerary {
   updatedAt?: string;
 }
 
+export interface TripPrice {
+  basePrice: number;
+  discounts: number;
+}
+
 export interface Trip {
   _id: string;
   title: string;
@@ -66,15 +71,16 @@ export interface Trip {
   departureOptions: "go_only" | "go_and_back";
   includedServices: string[];
   excludedServices: string[];
+  notIncludedServices?: string[];
   tripHighlights: string[];
   images: string[];
-  price: number;
-  tax: number;
+  price: TripPrice[];
+  tax?: number;
   maxParticipants: number;
   travelerType: "adult" | "child" | "senior" | "any";
   itinerary: TripItinerary[];
   status: "active" | "sold_out" | "upcoming" | "archived" | "canceled";
-  accommodationDetails: boolean;
+  accommodationDetails: string;
   guideAvailable: boolean;
   bookingConstraints?: {
     minBookingDays?: number;

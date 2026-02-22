@@ -32,7 +32,7 @@ interface TransformedTrip {
 export default function DestinationsSection() {
   const { t } = useLanguage();
 
-  const [toursData, setToursData] = useState<Record<string, any[]>>({});
+  const [toursData, setToursData] = useState<Record<string, TransformedTrip[]>>({});
   const [loading, setLoading] = useState<Record<string, boolean>>({});
   const [error, setError] = useState<Record<string, string | null>>({});
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -41,11 +41,11 @@ export default function DestinationsSection() {
   const categories = useMemo(
     () => [
       { key: "all", name: "All", label: t?.all || "All" },
-      { key: "cultural", name: "Cultural", label: t?.cultural || "Cultural" },
+      { key: "cultural", name: "Cultural", label: t?.tours?.cultural || "Cultural" },
       {
         key: "adventure",
         name: "Adventure",
-        label: t?.adventure || "Adventure",
+        label: t?.tours?.adventure || "Adventure",
       },
       { key: "beach", name: "Beach", label: t?.beach || "Beach" },
     ],
@@ -53,7 +53,7 @@ export default function DestinationsSection() {
   );
 
   // Transform API data to component format and slice to 12 items
-  const transformToursData = useCallback((apiTours) => {
+  const transformToursData = useCallback((apiTours: any[]): TransformedTrip[] => {
     return (apiTours || [])
       .filter((tour) => tour.status === "active") // Only show active tours
       .slice(0, 12)
@@ -67,7 +67,9 @@ export default function DestinationsSection() {
         currency: "TND", // You can modify this based on your needs
         category: tour.tripType,
         duration:
-          tour.duration > 1 ? `${tour.duration} days` : `${tour.duration} day`,
+          tour.duration > 1
+            ? `${tour.duration} ${t.serviceDetails.days}`
+            : `${tour.duration} ${(t.serviceDetails as any).day || "day"}`,
         description: tour.description,
         highlights: tour.tripHighlights || [],
         status: tour.status,
@@ -80,7 +82,7 @@ export default function DestinationsSection() {
 
   // Fetch tours for a specific category
   const fetchTours = useCallback(
-    async (category) => {
+    async (category: string) => {
       // Don't fetch if data already exists
       if (toursData[category]) {
         return;
@@ -91,11 +93,7 @@ export default function DestinationsSection() {
 
       try {
         const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
-        const response = await fetch(`${baseUrl}/tours/`, {
-          headers: {
-            "ngrok-skip-browser-warning": "true",
-          },
-        });
+        const response = await fetch(`${baseUrl}/tours/`);
 
         if (!response.ok) {
           throw new Error(`Failed to fetch tours: ${response.status}`);
@@ -116,11 +114,12 @@ export default function DestinationsSection() {
           // Also store 'all' data if we're fetching a specific category
           ...(category !== "all" && !prev.all ? { all: allTours } : {}),
         }));
-      } catch (error) {
-        console.error(`Error fetching tours for ${category}:`, error);
+      } catch (err: any) {
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        console.error(`Error fetching tours for ${category}:`, err);
         setError((prev) => ({
           ...prev,
-          [category]: error.message,
+          [category]: errorMessage,
         }));
       } finally {
         setLoading((prev) => ({ ...prev, [category]: false }));
@@ -136,7 +135,7 @@ export default function DestinationsSection() {
 
   // Handle category change
   const handleCategoryChange = useCallback(
-    (categoryKey) => {
+    (categoryKey: string) => {
       setSelectedCategory(categoryKey);
 
       // If we have 'all' data and need a specific category, filter from existing data
@@ -162,7 +161,7 @@ export default function DestinationsSection() {
   const currentCategoryError = error[selectedCategory];
 
   // Truncate text utility
-  const truncateText = (text, maxLength) => {
+  const truncateText = (text: string, maxLength: number) => {
     if (!text) return "";
     return text.length > maxLength
       ? `${text.substring(0, maxLength)}...`
@@ -170,7 +169,7 @@ export default function DestinationsSection() {
   };
 
   // Format date utility
-  const formatDate = (dateString) => {
+  const formatDate = (dateString: string) => {
     try {
       return new Date(dateString).toLocaleDateString();
     } catch {
@@ -184,11 +183,11 @@ export default function DestinationsSection() {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-40 bg-lta-purple/5 blur-3xl rounded-full -mt-20"></div>
         <h4 className="text-lta-orange font-bold uppercase tracking-widest text-sm mb-2">Explore Tunisia</h4>
         <h2 className="text-4xl md:text-5xl font-black mb-4 text-lta-purple">
-          {t?.landingPage.tripSectionTitle ||
+          {t?.landingPage?.tripSectionTitle ||
             "Destinations You'll Love to Visit"}
         </h2>
         <p className="text-gray-500 max-w-2xl mx-auto text-lg">
-          {t?.landingPage.tripSectionSubtitle ||
+          {t?.landingPage?.tripSectionSubtitle ||
             "Explore our handpicked selection of the most beautiful destinations in Tunisia, curated for leadership and excellence."}
         </p>
       </div>
@@ -274,7 +273,7 @@ export default function DestinationsSection() {
                               fill
                               className="object-cover"
                               onError={(e) => {
-                                e.target.src = "/placeholder.svg";
+                                (e.target as HTMLImageElement).src = "/placeholder.svg";
                               }}
                             />
                             <div className="absolute top-2 right-2 bg-lta-purple text-white px-2 py-1 rounded text-sm">

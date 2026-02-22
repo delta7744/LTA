@@ -17,7 +17,8 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useLanguage } from "@/components/language-provider";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import type { Trip } from "@/lib/types";
 import { tunisiaRegions } from "@/lib/constant";
 import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -58,6 +59,25 @@ export default function ToursPage({ apiEndpoint, tourType }: ToursPageProps) {
   const [sortOption, setSortOption] = useState<string>("recommended");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+  const searchParams = useSearchParams();
+
+  // Initial sync from URL params
+  useEffect(() => {
+    const queryParam = searchParams.get("query");
+    const dateParam = searchParams.get("date");
+
+    if (queryParam) setSearchQuery(queryParam);
+    if (dateParam) setDepartureDate(dateParam);
+  }, [searchParams]);
+
+  const getEffectivePrice = (pkg: Trip) => {
+    if (pkg.price && Array.isArray(pkg.price) && pkg.price.length > 0) {
+      return (pkg.price[0].basePrice || 0) - (pkg.price[0].discounts || 0);
+    }
+    // Fallback for objects that might still have a flat price if any exist
+    if (typeof pkg.price === "number") return pkg.price;
+    return 0;
+  };
 
   // Custom slider refs and state
   const trackRef = useRef<HTMLDivElement>(null);
@@ -67,10 +87,20 @@ export default function ToursPage({ apiEndpoint, tourType }: ToursPageProps) {
     const fetchPackages = async () => {
       try {
         setLoading(true);
-        const response = await fetch(apiEndpoint);
-        if (!response.ok) throw new Error("Failed to fetch packages");
-        const data = await response.json();
-        let packages = data.data || [];
+
+        let packages: Trip[] = [];
+
+        try {
+          const response = await fetch(apiEndpoint);
+          if (response.ok) {
+            const data = await response.json();
+            packages = data.data || [];
+          } else {
+            console.warn(`API returned ${response.status} for ${apiEndpoint}, using fallbacks`);
+          }
+        } catch (networkError) {
+          console.warn("Backend unavailable, using fallback tours:", networkError);
+        }
 
         if (packages.length === 0) {
           console.warn(`No ${tourType} tours found in API, using fallbacks`);
@@ -81,22 +111,25 @@ export default function ToursPage({ apiEndpoint, tourType }: ToursPageProps) {
         setFilteredPackages(packages);
 
         if (packages.length > 0) {
-          const prices = packages.map((pkg: Trip) => pkg.price);
+          const prices = packages.map((pkg: Trip) => getEffectivePrice(pkg));
           const minPrice = Math.floor(Math.min(...prices) / 100) * 100;
           const maxPrice = Math.ceil(Math.max(...prices) / 100) * 100;
           setPriceBounds({ min: minPrice, max: maxPrice });
           setPriceRange({ min: minPrice, max: maxPrice });
         }
-      } catch (error) {
-        console.error("Error fetching packages, using fallbacks:", error);
-        setTourPackages(FALLBACK_TOURS.filter(t => t.tripType === tourType));
-        setFilteredPackages(FALLBACK_TOURS.filter(t => t.tripType === tourType));
       } finally {
         setLoading(false);
       }
     };
     fetchPackages();
   }, [apiEndpoint]);
+
+  // Apply filters automatically when tourPackages are loaded or search params change
+  useEffect(() => {
+    if (tourPackages.length > 0) {
+      applyFilters();
+    }
+  }, [tourPackages, searchQuery, departureDate]);
 
   // Handle mouse/touch drag for custom slider
   useEffect(() => {
@@ -202,9 +235,10 @@ export default function ToursPage({ apiEndpoint, tourType }: ToursPageProps) {
       });
     }
 
-    result = result.filter(
-      (pkg) => pkg.price >= priceRange.min && pkg.price <= priceRange.max
-    );
+    result = result.filter((pkg) => {
+      const price = getEffectivePrice(pkg);
+      return price >= priceRange.min && price <= priceRange.max;
+    });
 
     const activeDurations = Object.entries(selectedDurations)
       .filter(([_, isSelected]) => isSelected)
@@ -246,9 +280,9 @@ export default function ToursPage({ apiEndpoint, tourType }: ToursPageProps) {
     }
 
     if (sortOption === "price-low-high") {
-      result.sort((a, b) => a.price - b.price);
+      result.sort((a, b) => getEffectivePrice(a) - getEffectivePrice(b));
     } else if (sortOption === "price-high-low") {
-      result.sort((a, b) => b.price - a.price);
+      result.sort((a, b) => getEffectivePrice(b) - getEffectivePrice(a));
     } else if (sortOption === "duration") {
       result.sort((a, b) => a.duration - b.duration);
     }
@@ -764,7 +798,7 @@ export default function ToursPage({ apiEndpoint, tourType }: ToursPageProps) {
                           </div>
                           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
                             <div className="font-bold text-lta-purple text-lg sm:text-xl">
-                              {item.price} TND
+                              {getEffectivePrice(item)} TND
                               <span className="block text-sm text-muted-foreground">
                                 {t.serviceDetails.perPerson || "per person"}
                               </span>

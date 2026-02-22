@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogDescription,
   DialogFooter,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -64,10 +65,26 @@ export default function ThankYouModal({
   };
 
   const handleCopyReference = async () => {
-    if (bookingReference) {
-      await navigator.clipboard.writeText(bookingReference);
+    if (!bookingReference) return;
+    try {
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(bookingReference);
+      } else {
+        // Fallback for HTTP/non-secure contexts
+        const textarea = document.createElement("textarea");
+        textarea.value = bookingReference;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+      }
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy:", err);
     }
   };
 
@@ -86,9 +103,9 @@ export default function ThankYouModal({
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle2 className="text-white h-6 w-6" />
-              <h1 className="text-xl sm:text-2xl font-bold text-white">
+              <DialogTitle className="text-xl sm:text-2xl font-bold text-white">
                 Booking Confirmed!
-              </h1>
+              </DialogTitle>
             </div>
           </div>
         </div>

@@ -693,6 +693,13 @@ interface Translations {
     payAtOffice: string;
   };
 
+  all: string;
+  loadingTours: string;
+  errorLoadingTours: string;
+  tryAgain: string;
+  soldOut: string;
+  guideIncluded: string;
+
   [key: string]: any;
 }
 
@@ -791,6 +798,13 @@ const languages: Record<string, Translations> = {
       bookings: "My Bookings",
       about: "About Us", // Added
     },
+
+    all: "All",
+    loadingTours: "Loading tours...",
+    errorLoadingTours: "Error loading tours",
+    tryAgain: "Try Again",
+    soldOut: "Sold Out",
+    guideIncluded: "Guide Included",
 
     footer: {
       tagline: "Your trusted partner for unforgettable travel experiences.",
@@ -2191,6 +2205,13 @@ const languages: Record<string, Translations> = {
         "Ceci est uniquement une demande de réservation. Aucun paiement n'est requis maintenant.",
       payAtOffice: "Payer à notre bureau",
     },
+
+    all: "Tous",
+    loadingTours: "Chargement des circuits...",
+    errorLoadingTours: "Erreur lors du chargement des circuits",
+    tryAgain: "Réessayer",
+    soldOut: "Complet",
+    guideIncluded: "Guide Inclus",
   },
 
   ar: {
@@ -2928,6 +2949,13 @@ const languages: Record<string, Translations> = {
       bookingRequestInfo: "هذا طلب حجز فقط. لا يتطلب الدفع الآن.",
       payAtOffice: "الدفع في مكتبنا",
     },
+
+    all: "الكل",
+    loadingTours: "جاري تحميل الجولات...",
+    errorLoadingTours: "خطأ في تحميل الجولات",
+    tryAgain: "أعد المحاولة",
+    soldOut: "نفذت الكمية",
+    guideIncluded: "يتضمن مرشد",
   },
 
   es: {
@@ -3681,6 +3709,12 @@ const languages: Record<string, Translations> = {
         "Esto es solo una solicitud de reserva. No se requiere pago ahora.",
       payAtOffice: "Pagar en nuestra oficina",
     },
+    all: "Todos",
+    loadingTours: "Cargando tours...",
+    errorLoadingTours: "Error al cargar tours",
+    tryAgain: "Intentar de nuevo",
+    soldOut: "Agotado",
+    guideIncluded: "Guía incluido",
   },
 
   de: {
@@ -4435,6 +4469,12 @@ const languages: Record<string, Translations> = {
         "Dies ist nur eine Buchungsanfrage. Jetzt ist keine Zahlung erforderlich.",
       payAtOffice: "Zahlung in unserem Büro",
     },
+    all: "Alle",
+    loadingTours: "Touren werden geladen...",
+    errorLoadingTours: "Fehler beim Laden der Touren",
+    tryAgain: "Erneut versuchen",
+    soldOut: "Ausverkauft",
+    guideIncluded: "Führer inklusive",
   },
 };
 // Create context with default value
